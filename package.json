@@ -3,13 +3,22 @@
   "version": "0.0.0",
   "description": "node-todo-api",
   "main": "app.js",
+  "scripts": {
+    "test": "mocha server/**/*.test.js"
+  },
   "author": {
     "name": "frank"
   },
+  "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.15.5",
     "mongodb": "^2.2.31",
     "mongoose": "^4.11.13"
+  },
+  "devDependencies": {
+    "expect": "^21.2.0",
+    "mocha": "^3.5.3",
+    "nodemon": "^1.12.1"
   }
 }
