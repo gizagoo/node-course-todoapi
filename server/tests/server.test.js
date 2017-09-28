@@ -12,7 +12,9 @@ const todos = [
         text: 'Walk the Dog'
     }, {
         _id: new ObjectID(),
-        text: 'Feed the Cat'
+        text: 'Feed the Cat',
+        completed: true,
+        completedAt: new Date().getTime()
     }];
 
 beforeEach((done) => {
@@ -134,6 +136,37 @@ describe('DELETE /todos/:id', () => {
         request(app)
             .get('/todos/abcdefg')
             .expect(404)
+            .end(done);
+    });
+
+});
+
+describe('PATCH /todos/:id', () => {
+    it('should mark 0 complete and set timestamp', (done) => {
+        var hexString = todos[0]._id.toHexString();
+        request(app)
+            .patch(`/todos/${hexString}`)
+            .send({ text: 'New text for zero', completed: true })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe('New text for zero');
+                expect(res.body.todo.completed).toBe(true);
+                expect(typeof (res.body.todo.completedAt)).toBe('number');
+            })
+            .end(done);
+    });
+
+    it('should mark 1 incomplete and clear timestamp', (done) => {
+        var hexString = todos[1]._id.toHexString();
+        request(app)
+            .patch(`/todos/${hexString}`)
+            .send({ text: 'New text for one', completed: false })
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo.text).toBe('New text for one');
+                expect(res.body.todo.completed).toBe(false);
+                expect(res.body.todo.completedAt).toBeFalsy;
+            })
             .end(done);
     });
 
