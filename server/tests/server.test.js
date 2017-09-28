@@ -100,3 +100,41 @@ describe('GET /todos/:id', () => {
     });
 
 });
+
+describe('DELETE /todos/:id', () => {
+    it('should delete a given todo', (done) => {
+        var hexString = todos[0]._id.toHexString();
+        request(app) 
+            .delete(`/todos/${hexString}`)
+            .expect(200)
+            .expect((res) => {
+                expect(res.body.todo._id).toBe(hexString);
+            })
+            .end((err, res) => {
+                if (err) {
+                    return done(err);   // Return to prevent further processing
+                }
+                // Now check that it was deleted from MongoDB
+                Todo.findById(hexString).then((todos) => {
+                    expect(todos).toNotExist;
+                    done();
+                }).catch((e) => done(e));
+            });
+    });
+
+    it('should return 404 if id not found', (done) => {
+        var newId = new ObjectID();
+        request(app)
+            .delete(`/todos/${newId.toHexString()}`)
+            .expect(404)
+            .end(done);
+    });
+
+    it('should return 404 if id is invalid', (done) => {
+        request(app)
+            .get('/todos/abcdefg')
+            .expect(404)
+            .end(done);
+    });
+
+});
