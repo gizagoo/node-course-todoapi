@@ -8,12 +8,15 @@ const bodyParser = require('body-parser');
 var {mongoose} = require('./db/mongoose');
 var { Todo } = require('./models/todo');
 var { User } = require('./models/user');
+var { authenticate } = require('./middleware/authentication');
 
 var app = express();
 const port = process.env.PORT || 3000;  // Get port or use 3000
 //const port = 3000;
 
 app.use(bodyParser.json());
+
+//************************************ Todos ***************************/
 
 app.post('/todos', (req, res) => {
     var todo = new Todo({
@@ -24,7 +27,7 @@ app.post('/todos', (req, res) => {
         res.send(doc);
     }, (e) => {
         res.status(400).send(e);
-        });
+    });
 });
 
 app.get('/todos', (req, res) => {
@@ -44,10 +47,10 @@ app.get('/todos/:id', (req, res) => {
     Todo.findById(id).then((todo) => {
         if (!todo) {
             return res.status(404).send();
-        } 
+        }
 
         res.send({ todo });
-        
+
     }, (e) => {
         res.status(400).send();
     });
@@ -93,9 +96,31 @@ app.patch('/todos/:id', (req, res) => {
         res.send({ todo });
     }).catch((e) => {
         res.status(400).send();
-    })
-})
+    });
+});
 
+//************************************ Users ***************************/
+
+app.post('/users', (req, res) => {
+    var body = _.pick(req.body, ['email', 'password']);
+
+    var user = new User(body);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => { 
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        res.status(400).send(e);
+    });
+});
+
+
+app.get('/users/me', authenticate, (req, res) => {
+    res.send(req.user);
+});
+
+//********************************** Server ***************************/
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
