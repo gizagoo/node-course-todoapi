@@ -1,7 +1,4 @@
-var env = process.env.NODE_ENV || 'development';
-
-console.log("Process.env;")
-console.log(process.env);
+require('./config/config');
 
 const _ = require('lodash');
 const { ObjectID } = require('mongodb');
