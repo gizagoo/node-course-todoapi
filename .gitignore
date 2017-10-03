@@ -1,3 +1,4 @@
 node-todo-api.njsproj
 node_modules/
 package-lock.json
+server/config/config.json
