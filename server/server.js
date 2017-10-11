@@ -16,6 +16,12 @@ const port = process.env.PORT || 3000;  // Get port or use 3000
 
 app.use(bodyParser.json());
 
+app.get('/', (req, res) => {
+    var todolist = '<li>*GET /todos</li><li>*POST /todos</li><li>*GET /todos/:id</li><li>*DELETE /todos/:id</li><li>*PATCH /todos/:id</li>';
+    var userlist = '<li>POST /users</li><li>*GET /users</li><li>POST /users/login</li><li>*DELETE /users/me/token</li>';
+    res.send('<h2>This API Implements</h2><ul>' + todolist + userlist + '</ul><p>* Needs authentication');
+})
+
 //************************************ Todos ***************************/
 
 app.post('/todos', authenticate, (req, res) => {
